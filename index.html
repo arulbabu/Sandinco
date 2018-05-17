@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>jQuery.parseXML demo</title>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+
+
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+
+<style>
+#Viewer{
+height: 400px;
+}
+
+#Texture{
+height: 400px;
+}
+
+.buffer{
+  background-image:url("giphy.gif");
+}
+
+</style>
+
+
+</head>
+
+<body>
+
+  <div id="player360" class="container">
+    <div class="row">
+    <div id="Viewer" class="col-sm-6"></div>
+    <div id="Texture" class="col-sm-6">t</div>
+  </div>
+
+  <div class="row">
+    <div id="Model"></div>
+  </div>
+  </div>
+
+
+  <p id="someElement"></p>
+  <p id="anotherElement"></p>
+
+  <script>
+
+
+
+    function Update_Model(Model_Id) {
+    //  alert(Model_Id);
+    $htmlstr="";
+
+      $.get("https://www.holevr.in/Holocollabtest/api/Sanstone_Seeqence?nid="+Model_Id, function(data, status) {
+      $xml = $(data);
+
+      $xml.find("item>field_slide_image>item ").each(function(index,elem){
+      $htmlstr += '<img src="'+$(this).text()+'">';
+      });
+
+      $("#Viewer").html($htmlstr);
+      });
+    }
+
+   function Update_Textures(Stone_Id) {
+  //  alert(Stone_Id);
+      $htmlstr_texture="";
+
+      $.get("https://www.holevr.in/Holocollabtest/api/Sanstone_Tileoptions?stoneid="+Stone_Id, function(dataa, status) {
+      $xmll = $(dataa);
+
+      $xmll.find("item>Stone_tile").each(function(indexx,elemm){
+      $htmlstr_texture += '<img class="buffer" src="http://holevr.in/Holocollabtest/sites/default/files/'+$(this).text()+'.jpg">';
+
+      });
+
+        $("#Texture").html($htmlstr_texture);
+    });
+    }
+
+
+
+    $.get("https://www.holevr.in/Holocollabtest/api/Sandstone_Stoneindex", function(data, status) {
+    $xml = $(data);
+
+    $xml.find("item").each(function(index,elem){
+    $htmlstr = '<img src="'+$(this).find("Slide_Image>item").eq(0).text()+'" nidtarget="'+$(this).find("nid").text()+'" stoneid="'+$(this).find("Stone_Id").text() +'">';
+
+    $("#Model").append($htmlstr);
+    });
+
+    $( "#Model img" ).on( "click", function() {
+        //Change_Model($(this).attr('nidtarget'));
+        Update_Model($(this).attr('nidtarget'));
+        Update_Textures($(this).attr('stoneid'));
+    });
+    });
+
+
+
+
+  </script>
+
+</body>
+
+</html>

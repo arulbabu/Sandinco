@@ -4,8 +4,11 @@
 <head>
   <meta charset="utf-8">
   <title>jQuery.parseXML demo</title>
-  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="https://jqueryui.com/resources/demos/style.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
   <!-- Latest compiled and minified CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -27,9 +30,21 @@ height: 400px;
 }
 
 .buffer{
-  background-image:url("giphy.gif");
+height: 10px;
+//background-image:url("giphy.gif");
+background-repeat: no-repeat;
+position:relative;
+margin: 0;
+}
+#Safezone{
+  display: block;
+      height: 350px;
 }
 
+#Safezone img{
+position: absolute;
+width: 100%;
+}
 </style>
 
 
@@ -39,8 +54,11 @@ height: 400px;
 
   <div id="player360" class="container">
     <div class="row">
-    <div id="Viewer" class="col-sm-6"></div>
-    <div id="Texture" class="col-sm-6">t</div>
+    <div id="Viewer" class="col-sm-6">
+      <div id="Safezone" class="buffer"> </div>
+      <div id="Slider"><div id="slider"></div> </div>
+    </div>
+    <div id="Texture" class="col-sm-6"></div>
   </div>
 
   <div class="row">
@@ -54,40 +72,74 @@ height: 400px;
 
   <script>
 
+  var Slide_count=0,indexslid=1;
 
-
-    function Update_Model(Model_Id) {
+    function Update_Model(Model_Id){
     //  alert(Model_Id);
     $htmlstr="";
 
       $.get("https://www.holevr.in/Holocollabtest/api/Sanstone_Seeqence?nid="+Model_Id, function(data, status) {
       $xml = $(data);
-
+      Slide_count=0;
       $xml.find("item>field_slide_image>item ").each(function(index,elem){
       $htmlstr += '<img src="'+$(this).text()+'">';
+      Slide_count+=1;
       });
+      Slide_count=Slide_count-2;
 
-      $("#Viewer").html($htmlstr);
-      });
+    $("#Safezone").html($htmlstr);
+
+    $( "#Safezone img" ).each(function( index ) {
+      $( this ).hide();
+    });
+
+    $( "#Safezone img:nth-child("+indexslid+")" ).show();
+    });
+
     }
 
+
+
+
+
+    $("#slider").slider(
+    {
+                value:1,
+                min: 1,
+                max: 100,
+                step: 1,
+                slide: function( event, ui ) {
+                //Slide_count+=ui.value;
+                indexslid=Slide_count*ui.value/100;
+                indexslid=Math.round(indexslid)+1;
+              //  $( "#Model" ).html(Math.round(indexslid)+1);
+                Change_Slide_Display(indexslid);
+                }
+    }
+    );
+
+
+   function Change_Slide_Display(Slide_index) {
+     $( "#Safezone img" ).each(function( index ) {
+       $( this ).hide();
+     });
+     $( "#Safezone img:nth-child("+Slide_index+")" ).show();
+   }
+
    function Update_Textures(Stone_Id) {
-  //  alert(Stone_Id);
+    //alert(Stone_Id);
       $htmlstr_texture="";
 
       $.get("https://www.holevr.in/Holocollabtest/api/Sanstone_Tileoptions?stoneid="+Stone_Id, function(dataa, status) {
       $xmll = $(dataa);
 
       $xmll.find("item>Stone_tile").each(function(indexx,elemm){
-      $htmlstr_texture += '<img class="buffer" src="http://holevr.in/Holocollabtest/sites/default/files/'+$(this).text()+'.jpg">';
+      $htmlstr_texture += '<img src="http://holevr.in/Holocollabtest/sites/default/files/'+$(this).text()+'.jpg">';
 
       });
-
-        $("#Texture").html($htmlstr_texture);
+      $("#Texture").html($htmlstr_texture);
     });
     }
-
-
 
     $.get("https://www.holevr.in/Holocollabtest/api/Sandstone_Stoneindex", function(data, status) {
     $xml = $(data);

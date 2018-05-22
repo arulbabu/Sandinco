@@ -45,28 +45,68 @@ margin: 0;
   display: block;
       height: 680px;
 }
+.ui-corner-all, .ui-corner-top, .ui-corner-right, .ui-corner-tr {
+    border-top-right-radius: 0px;
+        border-bottom-right-radius: 10px;
+        border-top-left-radius: 0px;
+            border-bottom-left-radius: 10px;
+}
+
+.ui-slider-horizontal {
+    height: .1em;
+}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default, .ui-button, html .ui-button.ui-state-disabled:hover, html .ui-button.ui-state-disabled:active {
+    border: 4px solid #e3007b;
+    /* background: #f6f6f6; */
+    font-weight: normal;
+    color: #454545;
+}
+
+.ui-widget-content {
+    border: 1px solid #dddddd;
+    background: #aaa;
+    color: #333333;
+}
+
+#Texture-Content{
+  margin-top: 50px;
+    overflow: scroll;
+}
+.sanlogo img{
+position: fixed;
+width: 100px;
+top: 50px;
+}
+
+.sanlogo {
+position: fixed;
+}
+
+.textureimg{
+word-wrap: break-word;
+}
 
 #Safezone img{
 position: absolute;
 width: 100%;
 }
+
 </style>
-
-
 </head>
 
 <body>
-
-  <div id="player360" class="container">
+    <div id="player360" class="container">
     <div class="row">
     <div id="Viewer" class="col-sm-9">
-      <div id="Safezone" class="buffer"> </div>
-      <div id="Slider"><div id="slider"></div> </div>
+    <div class="sanlogo"><img src="sanlogo.png"></div>
+
+    <div id="Safezone" class="buffer"> </div>
+    <div id="Slider"><div id="slider"></div> </div>
     </div>
     <div id="Texture" class="col-sm-3">
-      <div class="Texture-details">
-      </div>
-      <div class="Texture-Content">
+
+      <div id="Texture-Content">
       </div>
     </div>
   </div>
@@ -75,7 +115,6 @@ width: 100%;
     <div id="Model"></div>
   </div>
   </div>
-
 
   <p id="someElement"></p>
   <p id="anotherElement"></p>
@@ -140,17 +179,22 @@ width: 100%;
     //alert(Stone_Id);
       $htmlstr_texture="";
 
+
       $.get("https://www.holevr.in/Holocollabtest/api/Sanstone_Tileoptions?stoneid="+Stone_Id, function(dataa, status) {
       $xmll = $(dataa);
 
       $xmll.find("item").each(function(indexx,elemm){
-      $htmlstr_texture +='<div class="col-sm-3">';
-      $htmlstr_texture +='<img class="textureimg" src="http://holevr.in/Holocollabtest/sites/default/files/'+$(this).find("Stone_tile").text()+'.jpg" ' + '" nidtarget="'+$(this).find("nid").text()+'" stoneid="'+$(this).find("Stone_Id").text()+'">';
+      $htmlstr_texture +='<div class="textureimg col-sm-6">';
+      $htmlstr_texture +='<img src="https://www.holevr.in/Holocollabtest/sites/default/files/'+$(this).find("Stone_tile").text()+'.jpg" ' + '" nidtarget="'+$(this).find("nid").text()+'" stoneid="'+$(this).find("Stone_Id").text()+'">';
+      $htmlstr_texture +='<div width="100%">'+$(this).find("Stone_tile").text()+'</div>';
       $htmlstr_texture +='</div>';
       });
-      $(".Texture-Content").html($htmlstr_texture);
 
-      $( ".textureimg" ).on( "click", function() {
+      //alert($htmlstr_texture);
+
+      $("#Texture-Content").html($htmlstr_texture);
+
+      $( ".textureimg img" ).on( "click", function() {
     //    alert($(this).attr('nidtarget'));
   //              alert($(this).attr('stoneid'));
 
@@ -164,18 +208,20 @@ width: 100%;
     });
     }
 
-
-
-
-
     $.get("https://www.holevr.in/Holocollabtest/api/Sandstone_Stoneindex", function(data, status) {
+
+    $htmlstr="";
     $xml = $(data);
 
-    $xml.find("item").each(function(index,elem){
-    $htmlstr = '<img src="'+$(this).find("Slide_Image>item").eq(0).text()+'" nidtarget="'+$(this).find("nid").text()+'" stoneid="'+$(this).find("Stone_Id").text() +'">';
+    $xml.find("item>Slide_Image").each(function(index,elem){
 
-    $("#Model").append($htmlstr);
+    $htmlstr+='<div class="col-sm-3">';
+    $htmlstr +='<img src="'+$(this).find("item").eq(0).text()+'" nidtarget="'+$(this).parent().find("nid").text()+'" stoneid="'+$(this).parent().find("Stone_Id").text() +'">';
+    $htmlstr +='<div>'+' '+$(this).parent().find("Stone_Id").eq(0).text()+' Nid :'+$(this).parent().find("nid").text()+'</div>';
+    $htmlstr+='</div>';
     });
+
+    $("#Model").html($htmlstr);
 
     $( "#Model img" ).on( "click", function() {
         //Change_Model($(this).attr('nidtarget'));
@@ -184,7 +230,8 @@ width: 100%;
     });
     });
 
-
+    Update_Model(49);
+    Update_Textures('Stone_4');
 
 
   </script>

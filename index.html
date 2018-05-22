@@ -22,11 +22,16 @@
 
 <style>
 #Viewer{
-height: 400px;
+height: 700px;
 }
 
-#Texture{
-height: 400px;
+#Texture img{
+width: 100%;
+}
+
+#Texture .Texture-details{
+  height: 300px;
+  display: block;
 }
 
 .buffer{
@@ -38,7 +43,7 @@ margin: 0;
 }
 #Safezone{
   display: block;
-      height: 350px;
+      height: 680px;
 }
 
 #Safezone img{
@@ -54,11 +59,16 @@ width: 100%;
 
   <div id="player360" class="container">
     <div class="row">
-    <div id="Viewer" class="col-sm-6">
+    <div id="Viewer" class="col-sm-9">
       <div id="Safezone" class="buffer"> </div>
       <div id="Slider"><div id="slider"></div> </div>
     </div>
-    <div id="Texture" class="col-sm-6"></div>
+    <div id="Texture" class="col-sm-3">
+      <div class="Texture-details">
+      </div>
+      <div class="Texture-Content">
+      </div>
+    </div>
   </div>
 
   <div class="row">
@@ -133,13 +143,30 @@ width: 100%;
       $.get("https://www.holevr.in/Holocollabtest/api/Sanstone_Tileoptions?stoneid="+Stone_Id, function(dataa, status) {
       $xmll = $(dataa);
 
-      $xmll.find("item>Stone_tile").each(function(indexx,elemm){
-      $htmlstr_texture += '<img src="http://holevr.in/Holocollabtest/sites/default/files/'+$(this).text()+'.jpg">';
-
+      $xmll.find("item").each(function(indexx,elemm){
+      $htmlstr_texture +='<div class="col-sm-3">';
+      $htmlstr_texture +='<img class="textureimg" src="http://holevr.in/Holocollabtest/sites/default/files/'+$(this).find("Stone_tile").text()+'.jpg" ' + '" nidtarget="'+$(this).find("nid").text()+'" stoneid="'+$(this).find("Stone_Id").text()+'">';
+      $htmlstr_texture +='</div>';
       });
-      $("#Texture").html($htmlstr_texture);
+      $(".Texture-Content").html($htmlstr_texture);
+
+      $( ".textureimg" ).on( "click", function() {
+    //    alert($(this).attr('nidtarget'));
+  //              alert($(this).attr('stoneid'));
+
+        Update_Model($(this).attr('nidtarget'));
+        Update_Textures($(this).attr('stoneid'));
+
+          //Change_Model($(this).attr('nidtarget'));
+    //      Update_Model($(this).attr('nidtarget'));
+    //      Update_Textures($(this).attr('stoneid'));
+      });
     });
     }
+
+
+
+
 
     $.get("https://www.holevr.in/Holocollabtest/api/Sandstone_Stoneindex", function(data, status) {
     $xml = $(data);
